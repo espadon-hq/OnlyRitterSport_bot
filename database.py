@@ -82,3 +82,46 @@ async def get_supplements_today(user_id: int):
             (user_id, date.today().isoformat())
         ) as cursor:
             return await cursor.fetchall()
+
+# ── Weight ─────────────────────────────────────────────
+async def log_weight(user_id: int, weight: float):
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO weight_log (user_id, weight_kg, date) VALUES (?,?,?)",
+            (user_id, weight, date.today().isoformat())
+        )
+        await db.commit()
+
+async def get_weight_history(user_id: int, days: int = 30):
+    async with aiosqlite.connect(DB_PATH) as db:
+        async with db.execute(
+            "SELECT weight_kg, date FROM weight_log WHERE user_id=? AND date >= date('now',?) ORDER BY date ASC",
+            (user_id, f"-{days} days")
+        ) as cursor:
+            return await cursor.fetchall()
+
+# ── Training ─────────────────────────────────────────────
+async def log_training(user_id: int, type_: str, duration: int, notes: str = ""):
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO training_log (user_id, type, duration_min, notes, date) VALUES (?,?,?,?,?)",
+            (user_id, type_, duration, notes, date.today().isoformat())
+        )
+        await db.commit()
+
+async def get_training_week(user_id: int):
+    async with aiosqlite.connect(DB_PATH) as db:
+        async with db.execute(
+            "SELECT type, duration_min, notes, date FROM training_log WHERE user_id=? AND date >= date('now','-7 days') ORDER BY date DESC",
+            (user_id,)
+        ) as cursor:
+            return await cursor.fetchall()
+
+# ── Sleep ─────────────────────────────────────────────
+async def log_sleep(user_id: int, hours: float, quality: int):
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO sleep_log (user_id, hours, quality, date) VALUES (?,?,?,?)",
+            (user_id, hours, quality, date.today().isoformat())
+        )
+        await db.commit()

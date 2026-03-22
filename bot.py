@@ -7,11 +7,17 @@ from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 
 from config import BOT_TOKEN
 from database import init_db
+from handlers.sleep import router as sleep_router
 from handlers.supplements import router as sup_router
+from handlers.training import router as train_router
+from handlers.weight import router as weight_router
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher(storage=MemoryStorage())
 dp.include_router(sup_router)
+dp.include_router(weight_router)
+dp.include_router(train_router)
+dp.include_router(sleep_router)
 
 MENU = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="💊 БАДи"), KeyboardButton(text="🏋️ Тренування")],
