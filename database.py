@@ -125,3 +125,23 @@ async def log_sleep(user_id: int, hours: float, quality: int):
             (user_id, hours, quality, date.today().isoformat())
         )
         await db.commit()
+
+# ── Mood ─────────────────────────────────────────────
+async def log_mood(user_id: int, mood: int, energy: int, time_of_day: str):
+    from datetime import date
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO mood_log (user_id, mood, energy, time_of_day, date) VALUES (?,?,?,?,?)",
+            (user_id, mood, energy, time_of_day, date.today().isoformat())
+        )
+        await db.commit()
+
+# ── Photo ─────────────────────────────────────────────
+async def log_photo(user_id: int, file_id: str, file_path: str):
+    from datetime import date
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute(
+            "INSERT INTO photos (user_id, file_id, date) VALUES (?,?,?)",
+            (user_id, file_id, date.today().isoformat())
+        )
+        await db.commit()
