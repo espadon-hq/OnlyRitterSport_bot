@@ -145,3 +145,35 @@ async def log_photo(user_id: int, file_id: str, file_path: str):
             (user_id, file_id, date.today().isoformat())
         )
         await db.commit()
+
+# ── Summary ─────────────────────────────────────────────
+async def get_daily_summary(user_id: int):
+    today = date.today().isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        sups = await (await db.execute(
+            "SELECT name, taken FROM supplements_log WHERE user_id=? AND date=?",
+            (user_id, today)
+        )).fetchall()
+        trainings = await (await db.execute(
+            "SELECT type, duration_min FROM training_log WHERE user_id=? AND date=?",
+            (user_id, today)
+        )).fetchall()
+        weight = await (await db.execute(
+            "SELECT weight_kg FROM weight_log WHERE user_id=? AND date=? LIMIT 1",
+            (user_id, today)
+        )).fetchone()
+        sleep = await (await db.execute(
+            "SELECT hours, quality FROM sleep_log WHERE user_id=? AND date=? LIMIT 1",
+            (user_id, today)
+        )).fetchone()
+        mood = await (await db.execute(
+            "SELECT mood, energy, time_of_day FROM mood_log WHERE user_id=? AND date=?",
+            (user_id, today)
+        )).fetchall()
+    return {
+        "supplements": sups,
+        "trainings": trainings,
+        "weight": weight,
+        "sleep": sleep,
+        "mood": mood,
+    }
