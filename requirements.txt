@@ -1,0 +1,7 @@
+aiogram==3.7.0
+apscheduler==3.10.4
+aiosqlite==0.20.0
+python-dotenv==1.0.1
+pytz==2024.1
+gspread==6.1.2
+oauth2client==4.1.3
